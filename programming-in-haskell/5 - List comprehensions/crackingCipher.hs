@@ -44,8 +44,8 @@ position x xs = [i | (x', i) <- zip xs [0..], x' == x]
 
 -- ////////////////////////////////////////////////////////
 
-crack :: [Char] -> [Char]
-crack xs = encode (-factor) xs
+crack :: [Char] -> (Int, [Char]) 
+crack xs = (factor, encode (-factor) xs)
             where 
                 factor = head (position (minimum chiTab) chiTab)
                 chiTab = [chiSqr (rotate n table') freqTable | n <- [0..25]]
