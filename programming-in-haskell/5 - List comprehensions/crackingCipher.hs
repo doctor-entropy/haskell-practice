@@ -25,20 +25,6 @@ rotate :: Int -> [a] -> [a]
 rotate n xs = drop n xs ++ take n xs
 
 -- /////////////////////////////////////////////////////////
--- Learn to import in haskell
-
--- let2int :: Char -> Int
--- let2int c = ord c - ord 'a'
-
--- int2let :: Int -> Char
--- int2let n = chr (ord 'a' + n)
-
--- shift :: Int -> Char -> Char
--- shift n c | isLower c = int2let ((let2int c + n) `mod` 26)
---           | otherwise = c
-
--- encode :: Int -> [Char] -> [Char]
--- encode n xs = [shift n x | x <- xs]
 
 position :: Eq a => a -> [a] -> [Int]
 position x xs = [i | (x', i) <- zip xs [0..], x' == x]

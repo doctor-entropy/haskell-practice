@@ -22,13 +22,6 @@ pyths n = [(x, y, z) | x <- enum,
                        x^2 + y^2 == z^2]
                     where enum = [1..n]
 
-pyths' :: [(Int, Int, Int)]
-pyths' = [(x, y, z) | x <- [1..],
-                       y <- [1..],
-                       z <- [1..],
-                       x^2 + y^2 == z^2]
-                    where enum = [1..]
-
 -- 6 Perfect numbers
 factors :: Int -> [Int]
 factors n = [i | i <- [1..(quot n 2)], n `mod` i == 0]
