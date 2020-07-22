@@ -1,4 +1,5 @@
 import Data.Char
+import CaesarsCipher
 
 freqTable = [8.1, 1.5, 2.8, 4.2, 12.7, 2.2, 2.0, 6.1, 7.0,
              0.2, 0.8, 4.0, 2.4, 6.7, 7.5, 1.9, 0.1, 6.0,
@@ -26,18 +27,18 @@ rotate n xs = drop n xs ++ take n xs
 -- /////////////////////////////////////////////////////////
 -- Learn to import in haskell
 
-let2int :: Char -> Int
-let2int c = ord c - ord 'a'
+-- let2int :: Char -> Int
+-- let2int c = ord c - ord 'a'
 
-int2let :: Int -> Char
-int2let n = chr (ord 'a' + n)
+-- int2let :: Int -> Char
+-- int2let n = chr (ord 'a' + n)
 
-shift :: Int -> Char -> Char
-shift n c | isLower c = int2let ((let2int c + n) `mod` 26)
-          | otherwise = c
+-- shift :: Int -> Char -> Char
+-- shift n c | isLower c = int2let ((let2int c + n) `mod` 26)
+--           | otherwise = c
 
-encode :: Int -> [Char] -> [Char]
-encode n xs = [shift n x | x <- xs]
+-- encode :: Int -> [Char] -> [Char]
+-- encode n xs = [shift n x | x <- xs]
 
 position :: Eq a => a -> [a] -> [Int]
 position x xs = [i | (x', i) <- zip xs [0..], x' == x]
