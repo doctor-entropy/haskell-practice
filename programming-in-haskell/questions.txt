@@ -1,0 +1,8 @@
+1. Don't fully understand lambdas
+
+    length :: [a] -> Int
+    length = foldl (\n _ -> n + 1) 0
+
+    How is it recursing??
+
+
