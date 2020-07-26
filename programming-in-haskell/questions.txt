@@ -5,4 +5,6 @@
 
     How is it recursing??
 
+    - I understood this
 
+2. Visit question 5 in Chapter 7 Exercises - Higher order functions.
