@@ -42,7 +42,7 @@ bools n = map (False:) bss ++ map (True:) bss
 
 rmdups :: Eq a => [a] -> [a]
 rmdups [] = []
-rmdups (x:xs) = x : filter (/= x) xs
+rmdups (x:xs) = x : rmdups (filter (/= x) xs)
 
 type Assoc k v = [(k, v)]
 type Subst = Assoc Char Bool
