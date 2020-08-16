@@ -57,3 +57,6 @@ size e = folde (^0) (+) e
 -- or
 size' :: Expr -> Int
 size' e = folde (\_ -> 1) (+) e
+
+-- 7
+-- In file ExtTautChecker.hs
