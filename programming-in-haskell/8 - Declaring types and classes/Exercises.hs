@@ -59,4 +59,7 @@ size' :: Expr -> Int
 size' e = folde (\_ -> 1) (+) e
 
 -- 7
+-- In NewInstances.hs file
+
+-- 8
 -- In file ExtTautChecker.hs
