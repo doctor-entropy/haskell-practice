@@ -43,9 +43,12 @@ subs (x:xs) = map (x:) yss ++ yss
                 where yss = subs xs
 
 interleve :: a -> [a] -> [[a]]
-interleve x [y] = [[x, y], [y, x]]
+interleve x [] = [[x]]
 interleve x (y:ys) = (x:y:ys) : map (y:) (interleve x ys)
 
 perms :: [a] -> [[a]]
-perms [y1, y2] = [[y1, y2], [y2, y1]]
+perms [] = [[]]
 perms (x:xs) = concat (map (interleve x) (perms xs))
+
+choices :: [a] -> [[a]]
+choices = concat . map perms . subs 
