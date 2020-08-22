@@ -38,7 +38,7 @@ eval (App o l r) = [apply o x y | x <- eval l,
 
 -- Combinatorial functions
 subs :: [a] -> [[a]]
-subs [x] = [[x], []]
+subs [] = [[]]
 subs (x:xs) = map (x:) yss ++ yss
                 where yss = subs xs
 
