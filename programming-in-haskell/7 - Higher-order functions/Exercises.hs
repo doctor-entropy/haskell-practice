@@ -73,6 +73,6 @@ iterate' f x = unfold (const False) id f x
 
 -- 9
 altMap :: (a -> b) -> (a -> b) -> [a] -> [b]
+altMap f g []          = []
 altMap f g (n1:[])     = (f n1) : []
-altMap f g (n1:n2: []) = (f n1) : (g n2) : []
-altMap f g (n1:n2:ns)  = (f n1) : (g n2) : (altMap ns)
+altMap f g (n1:n2:ns)  = (f n1) : (g n2) : (altMap f g ns)
