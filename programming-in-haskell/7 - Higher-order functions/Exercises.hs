@@ -76,3 +76,15 @@ altMap :: (a -> b) -> (a -> b) -> [a] -> [b]
 altMap f g []          = []
 altMap f g (n1:[])     = (f n1) : []
 altMap f g (n1:n2:ns)  = (f n1) : (g n2) : (altMap f g ns)
+
+-- 10
+luhnDouble :: Int -> Int
+luhnDouble n | double > 9 = double - 9
+             | otherwise = double
+             where double = 2 * n
+
+luhn :: [Int] -> Bool
+-- luhn n1 n2 n3 n4 = if luhnResult == 0 then True else False
+--                    where luhnResult = ((luhnDouble n1) + n2 + (luhnDouble n3) + n4) `mod` 10
+luhn ns | sum (altMap luhnDouble id ns) `mod` 10 == 0 = True
+        | otherwise = False
