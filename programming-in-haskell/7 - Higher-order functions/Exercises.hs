@@ -67,3 +67,12 @@ map' f = unfold (== []) (f . head) (drop 1)
 
 iterate' :: Eq a => (a -> a) -> a -> [a]
 iterate' f x = unfold (const False) id f x
+
+-- 7 and 8
+-- In ParityBitBinaryStringTransmitter.hs file
+
+-- 9
+altMap :: (a -> b) -> (a -> b) -> [a] -> [b]
+altMap f g (n1:[])     = (f n1) : []
+altMap f g (n1:n2: []) = (f n1) : (g n2) : []
+altMap f g (n1:n2:ns)  = (f n1) : (g n2) : (altMap ns)
