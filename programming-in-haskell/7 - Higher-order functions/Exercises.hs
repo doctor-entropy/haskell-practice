@@ -45,6 +45,13 @@ dec2int ns = sum [n * 10^p | (n, p) <- zip (reverse ns) [0..]]
 dec2int' :: [Int] -> Int
 dec2int' = foldl (\x y -> 10*x + y) 0
 
+-- 5
+curry' :: ((a, b) -> c) -> a -> (b -> c)
+curry' f = \x -> \y -> f (x, y)
+
+-- uncurry' :: a -> b -> c -> ((a -> b) -> c)
+-- uncurry' f a b = f (a, b)
+
 -- 6
 type Bit = Int
 
@@ -58,5 +65,5 @@ chop8 = unfold (== []) (take 8) (drop 8)
 map' :: Eq a => (a -> b) -> [a] -> [b]
 map' f = unfold (== []) (f . head) (drop 1)
 
--- iterate' :: (a -> b) -> a -> [b]
--- iterate' f = unfold ((== 8) . length) (f) (f)
+iterate' :: Eq a => (a -> a) -> a -> [a]
+iterate' f x = unfold (const False) id f x
