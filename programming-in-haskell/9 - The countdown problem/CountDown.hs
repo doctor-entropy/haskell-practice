@@ -78,6 +78,8 @@ ops = [Add, Sub, Mul, Div]
 solutions :: [Int] -> Int -> [Expr]
 solutions ns n = [e | ns' <- choices ns, e <- exprs ns', eval e == [n]]
 
+-- Optimized solution
+
 type Result = (Expr, Int)
 
 results :: [Int] -> [Result]
