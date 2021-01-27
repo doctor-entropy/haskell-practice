@@ -60,3 +60,31 @@ instance Applicative IO where
 
     (<*>) :: IO (a -> b) -> IO a -> IO b
     mg <*> xs = do {g <- gs; x <- xs; return (g x)}
+
+-- ******
+-- MONADS
+-- ******
+
+(>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+mx >>= f = case mx of
+              Nothing -> Nothing
+              Just x -> f x
+
+class Applicative m = Monad m where
+  return :: a -> m a
+  (>>=) :: m a -> (a -> m b) -> m b
+
+  return = pure
+
+instance Monad Maybe where
+  (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+  Nothing >>= _ = Nothing
+  (Just x) >>= f = f x
+
+instance Monad [] where
+  (>>=) :: [a] -> (a -> [b]) -> [b]
+  xs >>= f = [ y | x <- xs; y <- f x]
+
+-- instance Monad IO where
+--   (>>=) :: IO a -> (a -> IO b) -> IO b
+--   mx >>= f = do {x <- mx; return f x}
