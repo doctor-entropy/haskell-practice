@@ -9,8 +9,10 @@
 data Prop = Const Bool
           | Var Char
           | Not Prop
+          | Or Prop Prop
           | And Prop Prop
           | Imply Prop Prop
+          | Eqv Prop Prop
 
 -- A ∧ ¬A
 p1 :: Prop
@@ -32,9 +34,10 @@ vars :: Prop -> [Char]
 vars (Const _) = []
 vars (Var x) = [x]
 vars (Not x) = vars x
+vars (Or x y) = vars x ++ vars y
 vars (And x y) = vars x ++ vars y
 vars (Imply x y) = vars x ++ vars y
->>>>>>> 042954c0fa9e1af6020185821ac53c429f56e0a3
+vars (Eqv x y) = vars x ++ vars y
 
 bools :: Int -> [[Bool]]
 bools 0 = [[]]
@@ -59,9 +62,10 @@ eval :: Subst -> Prop -> Bool
 eval _ (Const x) = x
 eval s (Var x) = find x s
 eval s (Not x) = not (eval s x)
+eval s (Or x y) = (eval s x) || (eval s y)
 eval s (And x y) = (eval s x) && (eval s y)
 eval s (Imply x y) = (eval s x) <= (eval s y)
+eval s (Eqv x y) = (eval s x) == (eval s y)
 
 isTaut :: Prop -> Bool
 isTaut prop = and [eval s prop | s <- substs prop]
->>>>>>> 042954c0fa9e1af6020185821ac53c429f56e0a3
