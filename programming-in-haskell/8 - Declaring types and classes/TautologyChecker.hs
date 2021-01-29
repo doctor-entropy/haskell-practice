@@ -34,6 +34,7 @@ vars (Var x) = [x]
 vars (Not x) = vars x
 vars (And x y) = vars x ++ vars y
 vars (Imply x y) = vars x ++ vars y
+>>>>>>> 042954c0fa9e1af6020185821ac53c429f56e0a3
 
 bools :: Int -> [[Bool]]
 bools 0 = [[]]
@@ -63,3 +64,4 @@ eval s (Imply x y) = (eval s x) <= (eval s y)
 
 isTaut :: Prop -> Bool
 isTaut prop = and [eval s prop | s <- substs prop]
+>>>>>>> 042954c0fa9e1af6020185821ac53c429f56e0a3
