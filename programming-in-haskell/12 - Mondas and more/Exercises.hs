@@ -50,6 +50,8 @@ instance Applicative ZipList where
 
   (<*>) :: ZipList (a -> b) -> ZipList a -> ZipList b
   (Z gs) <*> (Z xs) = Z [ g x | (g, x) <- zip gs xs]
+  -- OR
+  -- (Z gs) <*> (Z xs) = Z (zipWith (\f x -> f x) fs xs)
 
 -- 6
 -- instance Applicative ((-> a) a) => Monad ((-> a) a) where
