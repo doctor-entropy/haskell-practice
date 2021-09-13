@@ -70,3 +70,17 @@ interleave :: a -> [a] -> [a]
 interleave y [] = []
 interleave y [x] = [x]
 interleave y (x:xs) = x : y : interleave y xs
+
+-- Making a move
+
+valid :: Grid -> Int -> Bool
+valid g i = i >=0 && i < size^2 && concat g !! i == B
+
+move :: Grid -> Int -> Player -> [Grid]
+move g i p = 
+    if valid g i then [ chop size (xs ++ [p] ++ ys) ] else []
+        where (xs, B:ys) = splitAt i (concat g)
+
+chop :: Int -> [a] -> [[a]]
+chop _ [] = [[]]
+chop n xs = take n xs : chop n (drop n xs)
