@@ -82,5 +82,49 @@ move g i p =
         where (xs, B:ys) = splitAt i (concat g)
 
 chop :: Int -> [a] -> [[a]]
-chop _ [] = [[]]
+chop _ [] = []
 chop n xs = take n xs : chop n (drop n xs)
+
+-- Reading a number
+
+prompt :: Player -> String
+prompt p = "Player " ++ show p ++ ", enter your move: "
+
+getNat :: String -> IO Int
+getNat prompt = do putStr prompt
+                   l <- getLine
+                   if l /= [] && all isDigit l then
+                       return (read l)
+                   else
+                       do putStrLn "ERROR: Invalid entry. Please enter a number between 0 - 9."
+                          getNat prompt
+
+tictactoe :: IO ()
+tictactoe = run empty O
+
+run :: Grid -> Player -> IO ()
+run g p = do cls
+             goto (1,1)
+             putGrid g
+             run' g p
+
+run' :: Grid -> Player -> IO ()
+run' g p | wins O g = putStrLn "Player O wins.\n"
+         | wins X g = putStrLn "Player X wins.\n"
+         | full g   = putStrLn "It's a draw.\n"
+         | otherwise = 
+             do i <- getNat (prompt p)
+                case move g i p of
+                    [] -> do putStrLn "ERROR: Invalid move."
+                             run' g p
+                    [g'] -> run g' (next p)                      
+
+type Pos = (Int, Int)
+
+goto :: Pos -> IO ()
+goto (x,y) = putStr ("\ESC[" ++ show y ++ ";" ++ show x ++ "H")
+
+cls :: IO ()
+cls = putStr "\ESC[2J"
+
+
