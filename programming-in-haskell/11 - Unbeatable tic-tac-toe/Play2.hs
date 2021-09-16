@@ -127,4 +127,24 @@ goto (x,y) = putStr ("\ESC[" ++ show y ++ ";" ++ show x ++ "H")
 cls :: IO ()
 cls = putStr "\ESC[2J"
 
+-- Game of trees
+data Tree a = Node a [Tree a]
+                deriving (Show)
+
+gametree :: Grid -> Player -> Tree Grid
+gametree g p = Node g [gametree g' (next p) | g' <- moves g p]
+
+moves :: Grid -> Player -> [Grid]
+moves g p 
+      | won g = []
+      | full g = []
+      | otherwise = concat [ move g i p | i <- [0..(size^2 - 1)] ]
+
+-- Pruning the tree
+prune :: Int -> Tree Grid -> Tree Grid
+prune 0 (Node x _) = Node x []
+prune n (Node x ts) = Node x [prune (n-1) t | t <- ts]
+
+depth :: Int
+depth = 9
 
