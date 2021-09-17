@@ -178,6 +178,28 @@ bestmove g p = head [ g' | Node (g', p') _ <- ts, p' == best ]
                     tree = prune depth (gametree g p)
                     Node (_, best) ts = minimax tree
 
+toInt :: Maybe Int -> Int
+toInt (Just n) = n
+toInt Nothing = 0
+
+mindepths :: Tree (Grid, Player) -> Int
+mindepths (Node (_, _) []) = 0
+mindepths (Node (t_, _) ts) = 1 + minimum (map mindepths ts)
+
+bestTree :: Tree (Grid, Player) -> Player -> Bool
+bestTree (Node (g, p) _) best = p == best
+
+fastestroute :: Grid -> Player -> Grid
+fastestroute g p = bestgrids !! (toInt minDepthIdx)
+                    where
+                        bestgrids = [ g' | Node (g', p') _ <- besttrees ]
+                        tree = prune depth (gametree g p)
+                        Node (_, best) ts = minimax tree
+                        besttrees = filter bestTree ts
+                        depths = map mindepths besttrees
+                        minDepth = foldl1 min depths
+                        minDepthIdx = elemIndex minDepth depths
+
 -- Exercises : Q2
 bestmoves :: Grid -> Player -> [Grid]
 bestmoves g p = [ g' | Node (g', p') _ <- ts, p' == best ]
@@ -194,7 +216,7 @@ play :: Grid -> Player -> IO ()
 play g p = do cls
               goto (1, 1)
               putGrid g
-              play' g p
+              playFast g p
 
 -- Exercises : Q2
 rand :: [a] -> IO Int
@@ -202,20 +224,33 @@ rand xs = do r <- randomRIO (0, (length xs)-1)
              return r
 
 -- Exercises : Q2
-playR' :: Grid -> Player -> IO ()
-playR' g p
+playR :: Grid -> Player -> IO ()
+playR g p
     | wins O g = putStrLn "Player O wins!\n"
     | wins X g = putStrLn "Player X wins!\n"
     | full g   = putStrLn "It's a draw!\n"
     | p == O   = do i <- getNat (prompt p)
                     case move g i p of
                         [] -> do putStrLn "ERROR: Invalid move"
-                                 playR' g p
+                                 playR g p
                         [g'] -> play g' (next p)
     | p == X   = do putStr "Player X is thinking... "
                     let bestmoves' = bestmoves g p
                     i <- rand bestmoves'
                     (play $! (bestmoves' !! i)) (next p)
+
+playFast :: Grid -> Player -> IO ()
+playFast g p
+    | wins O g = putStrLn "Player O wins!\n"
+    | wins X g = putStrLn "Player X wins!\n"
+    | full g   = putStrLn "It's a draw!\n"
+    | p == O   = do i <- getNat (prompt p)
+                    case move g i p of
+                        [] -> do putStrLn "ERROR: Invalid move"
+                                 playFast g p
+                        [g'] -> play g' (next p)
+    | p == X   = do putStr "Player X is thinking... "
+                    (play $! (fastestroute g p)) (next p)
 
 play' :: Grid -> Player -> IO ()
 play' g p
