@@ -1,7 +1,18 @@
+module TicTacToe
+(
+    gametree
+,   prune
+,   empty
+,   depth
+,   Grid
+,   Player (O, B, X)
+,   Tree (Node)
+) where
+
 import Data.Char
 import Data.List
 import System.IO
-
+import System.Random (randomRIO)
 
 -- Basic declarations
 
@@ -167,6 +178,13 @@ bestmove g p = head [ g' | Node (g', p') _ <- ts, p' == best ]
                     tree = prune depth (gametree g p)
                     Node (_, best) ts = minimax tree
 
+-- Exercises : Q2
+bestmoves :: Grid -> Player -> [Grid]
+bestmoves g p = [ g' | Node (g', p') _ <- ts, p' == best ]
+                where
+                    tree = prune depth (gametree g p)
+                    Node (_, best) ts = minimax tree
+
 -- Human vs computer
 main :: IO ()
 main = do hSetBuffering stdout NoBuffering
@@ -177,6 +195,27 @@ play g p = do cls
               goto (1, 1)
               putGrid g
               play' g p
+
+-- Exercises : Q2
+rand :: [a] -> IO Int
+rand xs = do r <- randomRIO (0, (length xs)-1)
+             return r
+
+-- Exercises : Q2
+playR' :: Grid -> Player -> IO ()
+playR' g p
+    | wins O g = putStrLn "Player O wins!\n"
+    | wins X g = putStrLn "Player X wins!\n"
+    | full g   = putStrLn "It's a draw!\n"
+    | p == O   = do i <- getNat (prompt p)
+                    case move g i p of
+                        [] -> do putStrLn "ERROR: Invalid move"
+                                 playR' g p
+                        [g'] -> play g' (next p)
+    | p == X   = do putStr "Player X is thinking... "
+                    let bestmoves' = bestmoves g p
+                    i <- rand bestmoves'
+                    (play $! (bestmoves' !! i)) (next p)
 
 play' :: Grid -> Player -> IO ()
 play' g p
