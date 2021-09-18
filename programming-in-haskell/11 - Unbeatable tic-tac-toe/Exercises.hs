@@ -19,6 +19,10 @@ depth :: Int
 depth = maxDepth tree
 
 -- 2
--- Looks at TicTacToe.hs file for solution
+-- Look at TicTacToe.hs file for solution
 
 -- 3
+-- Look at TicTacToe.hs file for solution
+
+-- 4
+-- Look at TicTacToe.hs file for solution

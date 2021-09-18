@@ -178,24 +178,25 @@ bestmove g p = head [ g' | Node (g', p') _ <- ts, p' == best ]
                     tree = prune depth (gametree g p)
                     Node (_, best) ts = minimax tree
 
+-- Exercises : Q3
 toInt :: Maybe Int -> Int
 toInt (Just n) = n
 toInt Nothing = 0
 
 mindepths :: Tree (Grid, Player) -> Int
 mindepths (Node (_, _) []) = 0
-mindepths (Node (t_, _) ts) = 1 + minimum (map mindepths ts)
+mindepths (Node (_, _) ts) = 1 + minimum (map mindepths ts)
 
-bestTree :: Tree (Grid, Player) -> Player -> Bool
-bestTree (Node (g, p) _) best = p == best
+bestTree :: Player -> Tree (Grid, Player) -> Bool
+bestTree best (Node (g, p) _) = p == best
 
 fastestroute :: Grid -> Player -> Grid
 fastestroute g p = bestgrids !! (toInt minDepthIdx)
                     where
                         bestgrids = [ g' | Node (g', p') _ <- besttrees ]
+                        besttrees = filter (bestTree best) ts
                         tree = prune depth (gametree g p)
                         Node (_, best) ts = minimax tree
-                        besttrees = filter bestTree ts
                         depths = map mindepths besttrees
                         minDepth = foldl1 min depths
                         minDepthIdx = elemIndex minDepth depths
@@ -207,16 +208,40 @@ bestmoves g p = [ g' | Node (g', p') _ <- ts, p' == best ]
                     tree = prune depth (gametree g p)
                     Node (_, best) ts = minimax tree
 
+-- Exercises : Q4.1
+getChoice :: IO Player
+getChoice = do x <- getChar
+               putChar '\n'
+               if (toUpper x) == 'X' then
+                   return X
+               else if (toUpper x) == 'O' then
+                   return O
+               else
+                   do putStrLn "ERROR: Invalid entry. Either choose 'O' or 'X'"
+                      putStr "Human, please choose your symbol (O goes first): "
+                      h <- getChoice
+                      return h
+
 -- Human vs computer
 main :: IO ()
 main = do hSetBuffering stdout NoBuffering
-          play empty O
+          -- Exercises : Q4.1
+          putStr "Human, please choose your symbol (O goes first): "
+          h <- getChoice
+          playC empty O h
 
 play :: Grid -> Player -> IO ()
 play g p = do cls
               goto (1, 1)
               putGrid g
-              playFast g p
+              play' g p
+
+-- Exercises : Q4.1
+playC :: Grid -> Player -> Player -> IO ()
+playC g p h = do cls
+                 goto (1, 1)
+                 putGrid g
+                 playChoice g p h
 
 -- Exercises : Q2
 rand :: [a] -> IO Int
@@ -239,6 +264,7 @@ playR g p
                     i <- rand bestmoves'
                     (play $! (bestmoves' !! i)) (next p)
 
+-- Exercises : Q3
 playFast :: Grid -> Player -> IO ()
 playFast g p
     | wins O g = putStrLn "Player O wins!\n"
@@ -264,3 +290,17 @@ play' g p
                         [g'] -> play g' (next p)
     | p == X   = do putStr "Player X is thinking... "
                     (play $! (bestmove g p)) (next p)
+
+-- Exercises : Q4.1
+playChoice :: Grid -> Player -> Player -> IO ()
+playChoice g p h
+    | wins O g = putStrLn "Player O wins!\n"
+    | wins X g = putStrLn "Player X wins!\n"
+    | full g   = putStrLn "It's a draw!\n"
+    | p == h   = do i <- getNat (prompt p)
+                    case move g i p of
+                        [] -> do putStrLn "ERROR: Invalid move"
+                                 playChoice g p h
+                        [g'] -> playC g' (next p) h
+    | otherwise = do putStr $ "Player " ++ show (next h) ++ " is thinking... "
+                     (playC $! (bestmove g p)) (next p) h
