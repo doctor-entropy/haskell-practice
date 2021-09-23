@@ -25,4 +25,7 @@ depth = maxDepth tree
 -- Look at TicTacToe.hs file for solution
 
 -- 4
--- Look at TicTacToe.hs file for solution
+-- a) Look at TicTacToe.hs file for solution
+-- b) Don't understand the question
+-- c) 
+-- d) 

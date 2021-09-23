@@ -178,6 +178,49 @@ bestmove g p = head [ g' | Node (g', p') _ <- ts, p' == best ]
                     tree = prune depth (gametree g p)
                     Node (_, best) ts = minimax tree
 
+-- alpha-beta pruning
+type Alpha = Player
+type Beta = Player
+
+type ABTree = (Alpha, Beta, [Tree (Grid, Player)])
+
+pruned :: ABTree -> Bool
+pruned (_, _, ts) = length ts == 0
+
+maxalpha :: ABTree -> Tree (Grid, Player) -> ABTree
+maxalpha (a, b, ts) t = 
+    if a' > a then (a', b, ts') else (a, b, ts')
+        where (a', b', ts') = abprune a b t
+
+minbeta :: ABTree -> Tree (Grid, Player) -> ABTree
+minbeta (a, b, ts) t = 
+    if b' < b then (a, b', ts') else (a, b, ts')
+        where (a', b', ts') = abprune a b t
+
+params :: Alpha -> Beta -> [ABTree] -> ABTree
+params pa pb [] = (pa, pb, [])
+params _ _ ts   = (a, b, ts')
+    where (a, b, _) = last ts
+          ts' = map trd ts
+          trd (_, _, [t]) = t
+
+abprune :: Alpha -> Beta -> Tree (Grid, Player) -> ABTree
+abprune a b (Node (g,p) [])
+    | wins O g  = (O, O, [Node (g,p) []])
+    | wins X g  = (X, X, [Node (g,p) []])
+    | otherwise = (B, B, [Node (g,p) []])
+abprune a b (Node (g,p) ts)
+    | a > b       = (a, b, [])
+    | turn g == X = 
+        let livingNodes = tail $ takeWhile (not . pruned) $ scanl maxalpha (a,b, dummy) ts
+            (a', _, ts') = params a b livingNodes
+        in  (a', a', [Node (g,p) ts'])
+    | turn g == O =
+        let livingNodes = tail $ takeWhile (not . pruned) $ scanl minbeta (a,b, dummy) ts
+            (_, b', ts') = params a b livingNodes
+        in  (b', b', [Node (g,p) ts'])
+    where dummy = [Node (g,p) ts]
+
 -- Exercises : Q3
 toInt :: Maybe Int -> Int
 toInt (Just n) = n
@@ -304,3 +347,7 @@ playChoice g p h
                         [g'] -> playC g' (next p) h
     | otherwise = do putStr $ "Player " ++ show (next h) ++ " is thinking... "
                      (playC $! (bestmove g p)) (next p) h
+
+countNodes :: Tree (Grid, Player) -> Int
+countNodes (Node (_,_) []) = 1
+countNodes (Node (_,_) ts) = 1 + sum [ countNodes t | t <- ts ]
