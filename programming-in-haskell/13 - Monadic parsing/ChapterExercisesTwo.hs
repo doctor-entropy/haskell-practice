@@ -31,3 +31,15 @@ instance Applicative Parser where
 three :: Parser (Char, Char)
 three = pure g <*> item <*> item <*> item
         where g x y z = (x, z)
+
+instance Monad Parser where
+    -- (>>=) :: Parser a -> (a -> Parser b) -> Parser b
+    p >>= f = P (\inp -> case parse p inp of
+                                []         -> []
+                                [(v, out)] -> parse (f v) out)
+
+three' :: Parser (Char, Char)
+three' = do x <- item
+            item
+            z <- item
+            return (x, z)
