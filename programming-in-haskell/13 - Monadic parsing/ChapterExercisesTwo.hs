@@ -43,3 +43,29 @@ three' = do x <- item
             item
             z <- item
             return (x, z)
+
+-- Making choices
+
+-- class Applicative f => Alternative f where
+--     empty :: f a
+--     (<|>) :: f a -> f a -> f a
+
+-- instance Alternative Maybe where
+--     -- empty :: Maybe a
+--     empty = Nothing
+
+--     -- <|> :: Maybe a -> Maybe a -> Maybe a
+--     Nothing  <|> my = my
+--     (Just x) <|> _  = Just x
+
+instance Alternative Parser where
+    -- empty :: Parser a
+    empty = P (\inp -> [])
+
+    -- (<|>) :: Parser a -> Parser a -> Parser a
+    p <|> q = P (\inp -> case parse p inp of
+                                []         -> parse q inp
+                                [(v, out)] -> [(v, out)])
+
+-- Derived primitives
+
