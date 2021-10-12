@@ -119,3 +119,30 @@ int = do char '-'
          n <- nat
          return (-n)
          <|> nat
+
+-- Handling spaces
+token :: Parser a -> Parser a
+token p = do space
+             v <- p
+             space
+             return v
+
+identifier :: Parser String
+identifier = token ident
+
+natural :: Parser Int
+natural = token nat
+
+integer :: Parser Int
+integer = token int
+
+symbol :: String -> Parser String
+symbol xs = token (string xs)
+
+nats :: Parser [Int]
+nats = do symbol "["
+          n <- natural
+          ns <- many (do symbol ","
+                         natural)
+          symbol "]"
+          return (n:ns)
