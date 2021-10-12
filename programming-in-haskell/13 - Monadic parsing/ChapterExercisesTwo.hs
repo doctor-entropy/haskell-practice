@@ -49,6 +49,11 @@ three' = do x <- item
 -- class Applicative f => Alternative f where
 --     empty :: f a
 --     (<|>) :: f a -> f a -> f a
+--     many :: f a -> f [a]
+--     some :: f a -> f [a]
+
+--     many x = some x <|> pure []
+--     some x = pure (:) <*> x <*> many x
 
 -- instance Alternative Maybe where
 --     -- empty :: Maybe a
@@ -68,4 +73,49 @@ instance Alternative Parser where
                                 [(v, out)] -> [(v, out)])
 
 -- Derived primitives
+sat :: (Char -> Bool) -> Parser Char
+sat p = do x <- item
+           if p x then return x else empty
 
+digit :: Parser Char
+digit = sat isDigit
+
+lower :: Parser Char
+lower = sat isLower
+
+upper :: Parser Char
+upper = sat isLower
+
+letter :: Parser Char
+letter = sat isAlpha
+
+alphanum :: Parser Char
+alphanum = sat isAlphaNum
+
+char :: Char -> Parser Char
+char x = sat (== x)
+
+string :: String -> Parser String
+string []     = return []
+string (x:xs) = do char x
+                   string xs
+                   return (x:xs)
+
+ident :: Parser String
+ident = do x <- lower
+           xs <- many alphanum
+           return (x:xs)
+
+nat :: Parser Int
+nat = do xs <- some digit
+         return (read xs)
+
+space :: Parser ()
+space = do many (sat isSpace)
+           return ()
+
+int :: Parser Int
+int = do char '-'
+         n <- nat
+         return (-n)
+         <|> nat
