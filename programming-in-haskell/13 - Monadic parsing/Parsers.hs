@@ -1,4 +1,19 @@
 -- Basic definitions
+module Parsers
+(
+    parse
+,   item
+,   empty
+,   expr
+,   symbol
+,   many
+,   char
+,   sat
+,   natural
+,   Parser
+,   (<|>)
+) where
+
 import Control.Applicative
 import Data.Char
 import System.IO
@@ -159,26 +174,35 @@ nats = do symbol "["
 
 -- Parsers for the above rules
 
+-- 6 Subtraction
 expr :: Parser Int
 expr = do t <- term
           do symbol "+"
              e <- expr
              return (t + e)
+            <|> do symbol "-"
+                   e <- expr
+                   return (t - e)
             <|> return t
 
+-- 6 Divison (quotient only)
 term :: Parser Int
 term = do f <- factor
           do symbol "*"
              t <- term
              return (f * t)
+            <|> do symbol "/"
+                   t <- term
+                   return (f `div` t)
             <|> return f
 
+-- 6 Returning Integers
 factor :: Parser Int
 factor = do symbol "("
             e <- expr
             symbol ")"
             return e
-         <|> natural
+         <|> integer
 
 -- eval :: String -> Int
 -- eval xs = case (parse expr xs) of
