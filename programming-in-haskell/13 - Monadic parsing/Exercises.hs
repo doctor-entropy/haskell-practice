@@ -41,4 +41,5 @@ comment = do P.symbol "--"
 --        return e
 --     (P.<|>) fmap Val P.natural
 
--- 6 Done in ChapterExercisesTwo.hs
+-- 6 Done in Parsers.hs
+-- 7 Done in Parsers.hs

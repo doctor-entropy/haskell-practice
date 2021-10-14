@@ -168,7 +168,8 @@ nats = do symbol "["
 -- Rules for parsing arithmetic expressions
 
 -- expr = term (+ expr | e)
--- term = factor (* term | e)
+-- term = expo (* term | e)
+-- expo = factor (^ expo | e) 
 -- factor = (expr) | nat
 -- nat = 0 | 1 | 2 | 3 | ....
 
@@ -186,14 +187,22 @@ expr = do t <- term
             <|> return t
 
 -- 6 Divison (quotient only)
+-- 7 Exponent 
 term :: Parser Int
-term = do f <- factor
+term = do exp <- expo
           do symbol "*"
              t <- term
-             return (f * t)
+             return (exp * t)
             <|> do symbol "/"
                    t <- term
-                   return (f `div` t)
+                   return (exp `div` t)
+            <|> return exp
+
+expo :: Parser Int
+expo = do f <- factor
+          do symbol "^"
+             exp <- expo
+             return (f ^ exp)
             <|> return f
 
 -- 6 Returning Integers
@@ -229,7 +238,7 @@ box = ["+---------------+",
 buttons :: String
 buttons = standard ++ extra
             where
-                standard = "qcd=123+456-789*0()/"
+                standard = "qcd=123+456-789*0()/^"
                 extra    = "QCD \ESC\BS\DEL\n"
 
 cls :: IO ()
