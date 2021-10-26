@@ -38,4 +38,25 @@ instance Traversable Maybe where
     -- traverse :: Applicative f => (a -> f b) -> Maybe a -> f (Maybe b)
     traverse f Nothing  = pure Nothing
     traverse f (Just x) = pure Just <*> f x
-    
+
+-- 4
+data Tree a = Leaf | Node (Tree a) a (Tree a)
+
+instance Foldable Tree where
+    -- fold :: Monoid a => Tree a -> a
+    fold Leaf = mempty
+    fold (Node l a b) = a `mappend` (fold l) `mappend` (fold r)
+
+    -- foldMap :: Monoid a => (a -> b) -> Tree a -> Tree b
+    foldMap _ Leaf = Leaf
+    foldMap f (Node l a r) = f a `mappend` (foldMap f l) `mappend` (foldMap f r)
+
+    -- foldr :: (a -> b -> b) -> b -> Tree a -> b
+    foldr f v Leaf = f mempty v
+    foldr f v (Node l a r) = foldr f (foldr f v1 r) l
+                                where v1 = f a v
+
+    -- foldl :: (a -> b -> a) -> a -> Tree b -> a
+    foldl f v Leaf = f mempty v
+    foldl f v (Node l a r) = foldl f (foldl f v1 l) r
+                                where v1 = f v a
