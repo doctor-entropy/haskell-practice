@@ -104,3 +104,28 @@ toList :: t a -> [a]
 fold      = foldMap id
 foldMap f = foldlr (mappend . f) mempty
 toList    = foldMap (\x -> [x])
+
+-- Traversables
+traverse :: (a -> Maybe b) -> [a] -> Maybe [b]
+traverse g []     = pure []
+traverse g (x:xs) = pure (:) <*> g x <*> traverse g xs
+
+class (Functor t, Foldable t) => Traversable t where
+    traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+
+instance Traversable [] where
+    -- traverse :: Applicative f => (a -> f b) -> [a] -> f [b]
+    traverse g []     = pure []
+    traverse g (x:xs) = pure (:) <*> g x <*> traverse g xs
+
+instance Traversable Tree where
+    -- traverse :: Applicative f => (a -> f b) -> Tree a -> f (Tree b)
+    traverse g (Leaf x)   = pure Leaf <*> g x
+    traverse g (Node l r) = pure Node <*> (traverse g l) <*> (traverse g r)
+
+-- Other primitives and defaults
+sequenceA :: Applicative f => t (f a) -> f (t a)
+sequenceA = traverse id
+
+-- traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+traverse g = sequenceA . fmap g
