@@ -60,3 +60,12 @@ instance Foldable Tree where
     foldl f v Leaf = f mempty v
     foldl f v (Node l a r) = foldl f (foldl f v1 l) r
                                 where v1 = f v a
+
+instance Traversable Tree where
+    -- traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+    traverse g Leaf = pure Leaf
+    traverse g (Node l a r) = pure Node <*> traverse g l <*> g a <*> traverse g r
+
+-- 5
+filterF :: Foldable t => (a -> Bool) -> t a -> [a]
+filterF p = foldMap (\x -> if p x then [x] else [])
