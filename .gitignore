@@ -22,3 +22,4 @@ cabal.project.local~
 .HTF/
 .ghc.environment.*
 category-theory-for-programmers.pdf
+Parallel and Concurrent Programming in Haskell.pdf
