@@ -70,12 +70,35 @@ instance Monad Expr where
 squareVar :: Char -> Expr String
 squareVar c = Var ([c] ++ "^2")
 
-toComplex :: Char -> Expr String
-toComplex | 'x' = Var "a"
-          | 'y' = Var "ib"
-          |  otherwise = (\c -> Var [c])
-
 -- Small example
 -- $ t = Add (Var 'x') (Val 3)
 -- $ t >>= squareVar
 -- Add (Var "x^2") (Val 3)
+
+-- 8
+
+-- The state monad
+
+type State = Int
+newtype ST a = S (State -> (a, State))
+
+app :: ST a -> State -> (a, State)
+app (S st) x = st x
+
+instance Functor ST where
+    -- fmap :: (a -> b) -> ST a -> ST b
+    fmap g st = do 
+        x <- st
+        return (g x)
+
+instance Applicative ST where
+    pure x = S (\s -> (x, s))
+
+    stf <*> stx = do
+        f <- stf
+        x <- stx
+        return (f x)
+
+instance Monad ST where
+    st >>= f = S (\s -> let (x,s') = app st s in app (f x) s')
+
